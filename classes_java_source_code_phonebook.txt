@@ -1,0 +1,472 @@
+import java.io.*;
+
+import java.util.*;
+
+class Phonebook {
+
+
+public static void main(String[] args) {
+
+  try {
+
+ final String FILENAME = "phonebook.text";
+
+ //final String FILENAME = "/Users/alvinhuang/Documents/phonebook.txt";
+
+  Scanner in2 = new Scanner(System.in);//being used for keyboard
+
+  Name name = null;
+PhoneNumber phoneNumber = null;
+
+  
+
+final int CAPACITY=100;
+
+  PhonebookEntry [] phonelist= new PhonebookEntry[CAPACITY];
+
+  
+int count_l=0, count_r=0;
+
+  char choice;// declare variables
+
+
+  int num_in_list=read(FILENAME,phonelist, CAPACITY);//method to read phonebook
+
+  
+do {
+
+ System.out.print("lookup, reverse-lookup, quit (l/r/q)? ");//ask for lookup, reverse-lookup, quit (l/r/q)
+
+ 
+
+         choice=in2.next().charAt(0);
+
+         switch(choice){
+
+          case'l':
+
+             count_l++;//count the number of lookups
+
+             lookup(phonelist, num_in_list, in2,name, phoneNumber);
+
+                 break;
+
+                
+
+             case'r':
+
+              count_r++;//count the number of reverse lookups
+
+              reverseLookup(phonelist, num_in_list, in2,name, phoneNumber);
+
+                 break;
+
+                 
+             case'q'://quit
+
+              System.out.print("\n");
+
+              break;
+
+          
+
+           }
+
+     }while(choice!='q');
+
+     
+System.out.println(count_l+" lookups performed");
+
+System.out.println(count_r+" reverse lookups performed");
+
+     
+}//close try
+
+catch (ArrayIndexOutOfBoundsException e) {
+
+    System.out.println("*** Exception *** Phonebook capacity exceeded - increase size of underlying array");
+
+} 
+  
+  
+  catch (FileNotFoundException e1) {
+
+    System.out.println("*** IOException *** phonebook.text (No such file or directory)");
+}
+
+
+
+
+
+ }
+
+ 
+
+ /* Method read()
+
+  input:
+
+  []phonelist-list in phones
+
+  CAPACITY-maximum of accounts
+
+  in1- reference to input file
+
+  process:
+
+  taking in 1st and last names and numbers
+
+  output:
+
+  returning the total of names and numbers
+
+  */
+
+
+
+ static int read(String FILENAME,PhonebookEntry [] phonelist, int CAPACITY)
+
+   throws FileNotFoundException{
+
+  Scanner scanner = new Scanner(new File(FILENAME));
+
+   int num_in_list=0;
+
+    while(scanner.hasNext())
+
+  {// opening while loop
+
+      if(num_in_list>CAPACITY)throw new ArrayIndexOutOfBoundsException("*** Exception *** Phonebook capacity exceeded - increase size of underlying array");
+
+      
+phonelist[num_in_list] = PhonebookEntry.read(scanner);
+
+   num_in_list++;
+
+   }// closing of while loop
+
+    return num_in_list;
+
+     }
+
+
+
+ /* Method lookup()
+
+  input:
+
+ []phonelist-list in phones
+
+ num_of_names- the number of names
+
+  in2- reference to input file
+
+ process:
+
+  checking if first name and last name is valid or not
+
+  output:
+
+  if valid print the phone number
+
+   */
+
+
+
+ static void lookup(PhonebookEntry [] phonelist, int num_of_names,Scanner in2,Name name, PhoneNumber phoneNumber)
+
+ {
+
+  boolean  found =false;
+
+  String the_firstname,the_lastname;
+
+  
+System.out.print("last name? ");
+
+  the_lastname=in2.next();// input last name
+
+  
+System.out.print("first name? ");
+
+  the_firstname=in2.next();// input first name
+
+  
+name = new Name(the_lastname, the_firstname);
+
+   for(int i=0; i<num_of_names; i++) {
+
+    
+if(name.equals(phonelist[i].getName())) { //search found for last and 1st name 
+
+          phoneNumber = phonelist[i].getPhoneNumber();
+
+           //if it is found, then show number or else say it is not found
+           found = true;
+           
+          }
+          
+   }
+
+           if(found)
+System.out.println(the_firstname + " " +the_lastname  + "'s phone number is " + phoneNumber.toString() + "\n");
+else
+ System.out.println("-- Name not found\n");
+
+ }
+
+ 
+
+ /* Method freverseLookup
+
+  input:
+
+ []phonelist-list in phones
+
+ num_of_phones- the number of names
+
+  in2- reference to input file
+
+ process:
+
+  checking if phone number is valid or not
+
+  output:
+
+  if valid print whole name
+
+  */
+
+
+
+ static void reverseLookup(PhonebookEntry []phonelist, int num_of_phones,Scanner in2,Name name, PhoneNumber phoneNumber)
+
+ {
+
+  boolean found = false;
+
+  String the_number;
+
+  System.out.print("phone number (nnn-nnn-nnnn)? ");
+
+  the_number=in2.next();// input last name
+
+  //System.out.print(the_number);
+
+ phoneNumber = new PhoneNumber(the_number);
+
+
+    for(int i=0; i<num_of_phones;i++) {
+
+      if( phoneNumber.equals( phonelist[i].getPhoneNumber() ) ) { //search found for number
+
+          name = phonelist[i].getName();
+
+         found = true;  
+
+         }
+
+     }
+
+     
+
+       //if number is found, show name or else say number is not found
+
+     if(found)
+System.out.println(the_number + " belongs to " + name.toString() + "\n");
+
+      else
+ System.out.println("-- Phone number not found\n");
+
+ }// closing of findnumber method
+
+ }// closing 
+
+
+
+
+
+
+
+
+//PhonebookEntry class**********
+
+class PhonebookEntry {
+
+private Name name;
+
+ private PhoneNumber phoneNumber;
+
+ public PhonebookEntry(){}
+
+
+ public PhonebookEntry(Name name, PhoneNumber phoneNumber) {
+
+  this.name = name;
+
+  this.phoneNumber = phoneNumber;
+
+ }
+
+ public Name getName() {
+
+  return name;
+
+ }
+
+ 
+//get phone number
+
+ public PhoneNumber getPhoneNumber() {
+
+  return phoneNumber;
+
+ }
+
+ 
+public String toString() {
+
+  return name.toString() + ": " + phoneNumber.toString();
+
+ }
+
+ public boolean nameEquals(PhonebookEntry other) {
+
+  return name.equals(other.name);
+
+ }
+
+ public boolean numberEquals(PhonebookEntry other) {
+
+  return phoneNumber.equals(other.phoneNumber);
+
+ }
+
+ public static PhonebookEntry read(Scanner scanner) {
+
+  if(!scanner.hasNext())
+
+   return null;
+
+
+
+  Name name = Name.read(scanner);
+
+  PhoneNumber phoneNumber = PhoneNumber.read(scanner);
+
+  return new PhonebookEntry(name, phoneNumber);
+
+ }
+
+}
+
+
+
+
+//PhoneNumber class*******
+
+class PhoneNumber {
+
+
+
+ private String number;
+
+
+
+ public PhoneNumber(String number){
+
+  this.number = number;
+
+ }
+
+ 
+
+ public String toString() {
+
+  return number;
+
+ }
+
+ public boolean equals(PhoneNumber other) {
+
+  return number.equals(other.number);
+
+ }
+
+ public static PhoneNumber read(Scanner scanner) {
+
+  if(!scanner.hasNext())
+
+   return null;
+
+  String number = scanner.next();
+
+  return new PhoneNumber(number);
+
+ }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Name class********
+
+class Name {
+
+ private String first, last;
+
+
+
+ public Name(String last, String first) {
+
+  this.last = last;
+
+  this.first = first;
+
+ }
+
+ 
+
+ 
+
+ public boolean equals(Name other) {
+
+  return first.equals(other.first) && last.equals(other.last);
+
+ }
+
+ public String toString() {
+
+  return first + " " + last;
+
+ }
+
+ public static Name read(Scanner scanner) {
+
+  if(!scanner.hasNext())
+
+   return null;
+
+  String last = scanner.next();
+
+  String first = scanner.next();
+
+  return new Name(last, first);
+
+ }
+
+ 
+
+
+
+}
